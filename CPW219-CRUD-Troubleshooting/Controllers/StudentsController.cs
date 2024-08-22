@@ -70,21 +70,31 @@ namespace CPW219_CRUD_Troubleshooting.Controllers
             return View(s);
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            Student p = StudentDb.GetStudent(context, id);
-            return View(p);
+            Student? s = await context.Students.FindAsync(id);
+
+            if (s == null)
+            {
+                return NotFound();
+            }
+
+            return View(s);
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirm(int id)
+        public async Task<IActionResult> DeleteConfirm(int id)
         {
             //Get Product from database
-            Student p = StudentDb.GetStudent(context, id);
+            Student s = await context.Students.FindAsync(id);
 
-            StudentDb.Delete(context, p);
-
-            return RedirectToAction("Index");
+            if (s != null)
+            {
+                context.Students.Remove(s);
+                await context.SaveChangesAsync();
+                return RedirectToAction("StudentRoster");
+            }
+            return RedirectToAction("StudentRoster");
         }
     }
 }
