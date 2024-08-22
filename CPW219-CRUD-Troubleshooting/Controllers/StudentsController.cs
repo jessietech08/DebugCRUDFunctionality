@@ -1,5 +1,6 @@
 ﻿using CPW219_CRUD_Troubleshooting.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CPW219_CRUD_Troubleshooting.Controllers
 {
@@ -12,10 +13,11 @@ namespace CPW219_CRUD_Troubleshooting.Controllers
             context = dbContext;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> StudentRoster()
         {
-            List<Student> products = StudentDb.GetStudents(context);
-            return View();
+            List<Student> products = await (from product in context.Students
+                                            select product).ToListAsync();
+            return View(products);
         }
 
         public IActionResult Create()
