@@ -15,28 +15,31 @@ namespace CPW219_CRUD_Troubleshooting.Controllers
 
         public async Task<IActionResult> StudentRoster()
         {
-            List<Student> products = await (from product in context.Students
-                                            select product).ToListAsync();
-            return View(products);
+            List<Student> students = await context.Students.ToListAsync();
+            return View(students);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+
         [HttpPost]
-        public IActionResult Create(Student p)
+        public async Task<IActionResult> Create(Student s)
         {
             if (ModelState.IsValid)
             {
-                StudentDb.Add(p, context);
-                ViewData["Message"] = $"{p.Name} was added!";
-                return View();
+                context.Students.Add(s);
+                await context.SaveChangesAsync();
+
+                TempData["Message"] = $"{s.Name} was added!";
+                return RedirectToAction("StudentRoster");
             }
 
             //Show web page with errors
-            return View(p);
+            return View(s);
         }
 
         public IActionResult Edit(int id)
